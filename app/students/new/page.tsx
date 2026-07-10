@@ -1,22 +1,26 @@
+import { redirect } from "next/navigation";
 import { Save } from "lucide-react";
-import { AppShell } from "@/components/layout/app-shell";
+import { AdminShell } from "@/components/layout/admin-shell";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, Input, Textarea } from "@/components/ui/field";
+import { getCurrentTeacher } from "@/lib/data";
 
-export default function NewStudentPage() {
+export default async function NewStudentPage() {
+  const teacherRecord = await getCurrentTeacher();
+  if (teacherRecord?.role !== "ADMIN") {
+    redirect("/students");
+  }
+
   return (
-    <AppShell>
-      <div className="grid gap-5">
-        <section className="grid gap-2">
-          <p className="text-sm font-semibold text-primary">管理者画面</p>
-          <h1 className="text-2xl font-bold">生徒情報登録</h1>
-          <p className="text-sm leading-6 text-muted-foreground">
-            生徒検索と授業記録に使う基本情報を登録します。
-          </p>
-        </section>
+    <AdminShell active="students">
+      <div className="grid gap-6 p-6">
+        <div>
+          <h1 className="text-lg font-medium">生徒情報登録</h1>
+          <p className="text-xs text-muted-foreground">生徒検索と授業記録に使う基本情報を登録します。</p>
+        </div>
 
-        <Card className="p-4">
+        <Card className="grid gap-4 p-5">
           <form className="grid gap-4">
             <Field label="生徒名">
               <Input name="name" placeholder="例：佐藤 葵" />
@@ -30,13 +34,13 @@ export default function NewStudentPage() {
             <Field label="備考">
               <Textarea name="note" placeholder="例：文章題は条件整理から始めると進めやすい" />
             </Field>
-            <Button type="button" className="w-full">
+            <Button type="button" className="w-fit">
               <Save className="h-5 w-5" aria-hidden="true" />
               登録する
             </Button>
           </form>
         </Card>
       </div>
-    </AppShell>
+    </AdminShell>
   );
 }

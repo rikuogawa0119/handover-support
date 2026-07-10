@@ -1,63 +1,114 @@
-import { BookOpenCheck, Clock3, Search, UsersRound } from "lucide-react";
-import { AppShell } from "@/components/layout/app-shell";
+import { AdminShell } from "@/components/layout/admin-shell";
+import { MetricCard } from "@/components/admin/metric-card";
+import { LessonTable } from "@/components/admin/lesson-table";
 import { ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { getStudents } from "@/lib/data";
+import { getCurrentTeacher, getLessons, getStudents } from "@/lib/data";
+import { getInitials } from "@/lib/utils";
 
 export default async function HomePage() {
-  const students = await getStudents();
-  const recentStudents = students.slice(0, 3);
+  const [teacherRecord, students, lessons] = await Promise.all([
+    getCurrentTeacher(),
+    getStudents(),
+    getLessons()
+  ]);
+
+  const isAdmin = teacherRecord?.role === "ADMIN";
+  const avatar = (
+    <div className="grid h-9 w-9 place-items-center rounded-full bg-gray-100 text-xs font-medium text-gray-700">
+      {getInitials(teacherRecord?.name ?? "先生")}
+    </div>
+  );
+
+  if (isAdmin) {
+    const now = new Date();
+    const weekAgo = new Date(now);
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    const weekAgoStr = weekAgo.toISOString().slice(0, 10);
+
+    const thisWeekCount = lessons.filter((lesson) => lesson.lessonDate >= weekAgoStr).length;
+    const missingContentCount = lessons.filter((lesson) => !lesson.lessonContent.trim()).length;
+    const notSubmittedCount = lessons.filter(
+      (lesson) => lesson.homework?.submissionStatus === "NOT_SUBMITTED"
+    ).length;
+    const recentLessons = lessons.slice(0, 5);
+
+    return (
+      <AdminShell active="home">
+        <div className="grid gap-6 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-lg font-medium">ホーム</h1>
+              <p className="text-xs text-muted-foreground">
+                生徒{students.length}名 ・ 全{lessons.length}件の授業記録
+              </p>
+            </div>
+            {avatar}
+          </div>
+
+          <div className="grid grid-cols-3 gap-4">
+            <MetricCard label="今週の記録数" value={thisWeekCount} />
+            <MetricCard label="未入力" value={missingContentCount} valueClassName="text-red-600" />
+            <MetricCard label="宿題 未提出" value={notSubmittedCount} valueClassName="text-amber-600" />
+          </div>
+
+          <div className="grid gap-3">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-medium text-gray-500">直近の授業記録</p>
+              <ButtonLink href="/lessons" variant="secondary" size="sm">
+                すべて見る
+              </ButtonLink>
+            </div>
+            <LessonTable lessons={recentLessons} isAdmin={false} />
+          </div>
+        </div>
+      </AdminShell>
+    );
+  }
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const todaysLessons = lessons.filter(
+    (lesson) => lesson.teacherName === teacherRecord?.name && lesson.lessonDate === todayStr
+  );
 
   return (
-    <AppShell>
-      <div className="grid gap-5">
-        <section className="grid gap-3">
-          <p className="text-sm font-semibold text-primary">今日の授業後に、迷わず3分で記録</p>
-          <h1 className="text-2xl font-bold leading-9">生徒の進度・理解度・宿題・引継ぎを一元管理します。</h1>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <ButtonLink href="/students" className="w-full">
-              <Search className="h-5 w-5" aria-hidden="true" />
-              生徒を検索する
-            </ButtonLink>
-            <ButtonLink href="/admin" variant="secondary" className="w-full">
-              <UsersRound className="h-5 w-5" aria-hidden="true" />
-              管理者画面
-            </ButtonLink>
+    <AdminShell active="home">
+      <div className="grid gap-6 p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-lg font-medium">今日のタスク</h1>
+            <p className="text-xs text-muted-foreground">
+              {teacherRecord?.name ?? "先生"} ・ 本日{todaysLessons.length}件の授業記録
+            </p>
           </div>
-        </section>
+          {avatar}
+        </div>
 
-        <section className="grid grid-cols-2 gap-3">
-          <Card className="p-4">
-            <Clock3 className="mb-3 h-6 w-6 text-primary" aria-hidden="true" />
-            <p className="text-2xl font-bold">{students.length}</p>
-            <p className="text-sm text-muted-foreground">登録生徒</p>
-          </Card>
-          <Card className="p-4">
-            <BookOpenCheck className="mb-3 h-6 w-6 text-primary" aria-hidden="true" />
-            <p className="text-2xl font-bold">5段階</p>
-            <p className="text-sm text-muted-foreground">理解度記録</p>
-          </Card>
-        </section>
+        <ButtonLink href="/students" className="w-fit">
+          生徒を検索する
+        </ButtonLink>
 
-        <section className="grid gap-3">
-          <h2 className="text-lg font-bold">最近確認した生徒</h2>
-          {recentStudents.map((student) => (
-            <Card key={student.id} className="p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="font-bold">{student.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {student.grade} / {student.schoolName ?? "学校未設定"}
-                  </p>
+        <div className="grid gap-3">
+          <p className="text-xs font-medium text-gray-500">本日の授業記録</p>
+          {todaysLessons.length === 0 ? (
+            <Card className="p-4 text-sm text-muted-foreground">本日の授業記録はまだありません。</Card>
+          ) : (
+            todaysLessons.map((lesson) => (
+              <Card key={lesson.id} className="p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="font-medium">{lesson.studentName}</p>
+                    <p className="text-xs text-muted-foreground">{lesson.subjectName}</p>
+                  </div>
+                  <ButtonLink href={`/students/${lesson.studentId}`} size="sm" variant="secondary">
+                    詳細
+                  </ButtonLink>
                 </div>
-                <ButtonLink href={`/students/${student.id}`} size="sm" variant="secondary">
-                  詳細
-                </ButtonLink>
-              </div>
-            </Card>
-          ))}
-        </section>
+              </Card>
+            ))
+          )}
+        </div>
       </div>
-    </AppShell>
+    </AdminShell>
   );
 }

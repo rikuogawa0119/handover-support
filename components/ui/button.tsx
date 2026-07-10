@@ -39,7 +39,7 @@ export function Button({
   return (
     <button
       className={classNames(
-        "inline-flex items-center justify-center gap-2 rounded-md border font-semibold transition disabled:cursor-not-allowed disabled:opacity-50",
+        "inline-flex items-center justify-center gap-2 rounded-lg border font-medium transition disabled:cursor-not-allowed disabled:opacity-50",
         variants[variant],
         sizes[size],
         className
@@ -60,7 +60,7 @@ export function ButtonLink({
     <Link
       href={href}
       className={classNames(
-        "inline-flex items-center justify-center gap-2 rounded-md border font-semibold transition",
+        "inline-flex items-center justify-center gap-2 rounded-lg border font-medium transition",
         variants[variant],
         sizes[size],
         className

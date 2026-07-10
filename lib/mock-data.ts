@@ -46,6 +46,13 @@ export const currentTeacher = {
   email: "demo@example.com"
 };
 
+/** Demo data uses dates relative to "now" so the dashboard always looks populated. */
+function daysAgo(n: number) {
+  const date = new Date();
+  date.setDate(date.getDate() - n);
+  return date.toISOString().slice(0, 10);
+}
+
 export const students: StudentDetail[] = [
   {
     id: "student-aoi",
@@ -53,13 +60,13 @@ export const students: StudentDetail[] = [
     grade: "中3",
     schoolName: "桜台中学校",
     note: "計算は速い。文章題は条件整理で止まりやすい。",
-    lastLessonDate: "2026-06-20",
+    lastLessonDate: daysAgo(2),
     lessons: [
       {
         id: "lesson-1",
-        lessonDate: "2026-06-20",
+        lessonDate: daysAgo(2),
         lessonContent: "二次関数の最大・最小を解説。平方完成の手順を確認。",
-        understanding: 4,
+        understanding: 5,
         nextPlan: "応用問題で定義域があるパターンを扱う。",
         teacher: { name: "山田 先生" },
         subject: { name: "数学" },
@@ -70,7 +77,7 @@ export const students: StudentDetail[] = [
       },
       {
         id: "lesson-2",
-        lessonDate: "2026-06-13",
+        lessonDate: daysAgo(9),
         lessonContent: "因数分解の復習。置き換えを使う問題まで演習。",
         understanding: 3,
         nextPlan: "符号ミスの見直しルールを定着させる。",
@@ -86,8 +93,14 @@ export const students: StudentDetail[] = [
       {
         id: "handover-1",
         memoContent: "部活動後は疲れが出るため、冒頭5分は前回内容の口頭確認から入ると集中しやすい。",
-        createdAt: "2026-06-20",
+        createdAt: daysAgo(2),
         teacher: { name: "山田 先生" }
+      },
+      {
+        id: "handover-2",
+        memoContent: "保護者から夏期講習の相談あり。次回面談で日程を確定する予定。",
+        createdAt: daysAgo(20),
+        teacher: { name: "田中 先生" }
       }
     ]
   },
@@ -97,11 +110,11 @@ export const students: StudentDetail[] = [
     grade: "高1",
     schoolName: "青葉高校",
     note: "英文法は得意。長文は設問根拠を本文に戻して探す練習中。",
-    lastLessonDate: "2026-06-19",
+    lastLessonDate: daysAgo(3),
     lessons: [
       {
         id: "lesson-3",
-        lessonDate: "2026-06-19",
+        lessonDate: daysAgo(3),
         lessonContent: "関係代名詞 what と that の違いを整理。",
         understanding: 5,
         nextPlan: "長文内で文法知識を使って構造を取る。",
@@ -110,6 +123,43 @@ export const students: StudentDetail[] = [
         homework: {
           homeworkContent: "NextStage 関係詞 10問",
           submissionStatus: "ASSIGNED"
+        }
+      }
+    ],
+    handovers: []
+  },
+  {
+    id: "student-riku",
+    name: "田村 陸",
+    grade: "中2",
+    schoolName: "みどり中学校",
+    note: "理科は暗記より仕組みの理解から入ると定着しやすい。",
+    lastLessonDate: daysAgo(1),
+    lessons: [
+      {
+        id: "lesson-4",
+        lessonDate: daysAgo(1),
+        lessonContent: "",
+        understanding: 1,
+        nextPlan: "",
+        teacher: { name: "田中 先生" },
+        subject: { name: "理科" },
+        homework: {
+          homeworkContent: "ワーク p.10",
+          submissionStatus: "NOT_SUBMITTED"
+        }
+      },
+      {
+        id: "lesson-5",
+        lessonDate: daysAgo(6),
+        lessonContent: "光合成の実験結果をまとめ、グラフから考察する練習。",
+        understanding: 4,
+        nextPlan: "対照実験の考え方を次回も扱う。",
+        teacher: { name: "田中 先生" },
+        subject: { name: "理科" },
+        homework: {
+          homeworkContent: "実験レポート",
+          submissionStatus: "SUBMITTED"
         }
       }
     ],

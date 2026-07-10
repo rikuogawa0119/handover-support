@@ -8,7 +8,7 @@ export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <section
       className={classNames(
-        "rounded-lg border border-border bg-card text-card-foreground shadow-sm",
+        "rounded-xl border border-gray-200 bg-white text-card-foreground",
         className
       )}
       {...props}
@@ -16,11 +16,24 @@ export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   );
 }
 
-export function Badge({ className, ...props }: HTMLAttributes<HTMLSpanElement>) {
+const badgeVariants = {
+  neutral: "bg-muted text-muted-foreground",
+  gray: "bg-gray-100 text-gray-700",
+  green: "bg-green-100 text-green-800",
+  amber: "bg-amber-100 text-amber-800",
+  red: "bg-red-100 text-red-800"
+};
+
+export function Badge({
+  className,
+  variant = "neutral",
+  ...props
+}: HTMLAttributes<HTMLSpanElement> & { variant?: keyof typeof badgeVariants }) {
   return (
     <span
       className={classNames(
-        "inline-flex min-h-7 items-center rounded-md border border-border bg-muted px-2 text-xs font-semibold text-muted-foreground",
+        "inline-flex min-h-6 items-center rounded-full px-2.5 text-xs font-medium",
+        badgeVariants[variant],
         className
       )}
       {...props}
