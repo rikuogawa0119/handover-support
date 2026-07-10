@@ -38,10 +38,7 @@ export default async function HomePage() {
         <div className="grid gap-6 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-lg font-medium">ホーム</h1>
-              <p className="text-xs text-muted-foreground">
-                生徒{students.length}名 ・ 全{lessons.length}件の授業記録
-              </p>
+              <h1 className="text-2xl font-bold">トップ</h1>
             </div>
             {avatar}
           </div>
@@ -54,7 +51,7 @@ export default async function HomePage() {
 
           <div className="grid gap-3">
             <div className="flex items-center justify-between">
-              <p className="text-xs font-medium text-gray-500">直近の授業記録</p>
+              <p className="text-lg font-bold">直近の授業記録</p>
               <ButtonLink href="/lessons" variant="secondary" size="sm">
                 すべて見る
               </ButtonLink>
@@ -76,7 +73,7 @@ export default async function HomePage() {
       <div className="grid gap-6 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-lg font-medium">今日のタスク</h1>
+            <h1 className="text-2xl font-bold">今日のタスク</h1>
             <p className="text-xs text-muted-foreground">
               {teacherRecord?.name ?? "先生"} ・ 本日{todaysLessons.length}件の授業記録
             </p>
