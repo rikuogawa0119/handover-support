@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum TeacherRole {
+  TEACHER
+  ADMIN
+}
+
+enum HomeworkStatus {
+  UNSET
+  ASSIGNED
+  SUBMITTED
+  NOT_SUBMITTED
+}
+
+model Teacher {
+  id         String      @id @default(uuid()) @db.Uuid
+  authUserId String      @unique @map("auth_user_id") @db.Uuid
+  name       String
+  role       TeacherRole @default(TEACHER)
+  email      String      @unique
+
+  lessons   Lesson[]
+  handovers Handover[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("teachers")
+}
+
+model Student {
+  id         String  @id @default(uuid()) @db.Uuid
+  name       String
+  grade      String
+  schoolName String? @map("school_name")
+  note       String?
+
+  lessons   Lesson[]
+  handovers Handover[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([name])
+  @@map("students")
+}
+
+model Subject {
+  id   String @id @default(uuid()) @db.Uuid
+  name String @unique
+
+  lessons Lesson[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("subjects")
+}
+
+model Lesson {
+  id            String   @id @default(uuid()) @db.Uuid
+  studentId     String   @map("student_id") @db.Uuid
+  teacherId     String   @map("teacher_id") @db.Uuid
+  subjectId     String   @map("subject_id") @db.Uuid
+  lessonDate    DateTime @map("lesson_date")
+  lessonContent String   @map("lesson_content")
+  understanding Int
+  nextPlan      String?  @map("next_plan")
+
+  student  Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  teacher  Teacher   @relation(fields: [teacherId], references: [id], onDelete: Restrict)
+  subject  Subject   @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  homework Homework?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([studentId, lessonDate])
+  @@index([teacherId])
+  @@index([subjectId])
+  @@map("lessons")
+}
+
+model Homework {
+  id               String         @id @default(uuid()) @db.Uuid
+  lessonId         String         @unique @map("lesson_id") @db.Uuid
+  homeworkContent  String         @map("homework_content")
+  submissionStatus HomeworkStatus @default(UNSET) @map("submission_status")
+
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("homework")
+}
+
+model Handover {
+  id          String @id @default(uuid()) @db.Uuid
+  studentId   String @map("student_id") @db.Uuid
+  teacherId   String @map("teacher_id") @db.Uuid
+  memoContent String @map("memo_content")
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([studentId, createdAt])
+  @@index([teacherId])
+  @@map("handovers")
+}
