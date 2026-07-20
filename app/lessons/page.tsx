@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { AdminShell } from "@/components/layout/admin-shell";
+import { HeaderAvatar } from "@/components/layout/header-avatar";
 import { MetricCard } from "@/components/admin/metric-card";
 import { LessonFilterBar } from "@/components/admin/lesson-filter-bar";
 import { LessonTable } from "@/components/admin/lesson-table";
@@ -58,9 +59,7 @@ export default async function LessonsPage({
               {monthLabel} ・ 全{allLessons.length}件
             </p>
           </div>
-          <div className="grid h-9 w-9 place-items-center rounded-full bg-gray-100 text-xs font-medium text-gray-700">
-            {getInitials(teacherRecord?.name ?? "先生")}
-          </div>
+          <HeaderAvatar initials={getInitials(teacherRecord?.name ?? "先生")} isLoggedIn={Boolean(teacherRecord)} />
         </div>
 
         <div className="grid grid-cols-3 gap-4">

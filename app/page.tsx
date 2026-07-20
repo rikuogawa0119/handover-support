@@ -1,4 +1,5 @@
 import { AdminShell } from "@/components/layout/admin-shell";
+import { HeaderAvatar } from "@/components/layout/header-avatar";
 import { MetricCard } from "@/components/admin/metric-card";
 import { LessonTable } from "@/components/admin/lesson-table";
 import { ButtonLink } from "@/components/ui/button";
@@ -12,9 +13,7 @@ export default async function HomePage() {
   ]);
 
   const avatar = (
-    <div className="grid h-9 w-9 place-items-center rounded-full bg-gray-100 text-xs font-medium text-gray-700">
-      {getInitials(teacherRecord?.name ?? "先生")}
-    </div>
+    <HeaderAvatar initials={getInitials(teacherRecord?.name ?? "先生")} isLoggedIn={Boolean(teacherRecord)} />
   );
 
   const now = new Date();
