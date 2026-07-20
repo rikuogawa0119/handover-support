@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { StudentDetail } from "@/lib/mock-data";
+import type { StudentDetail } from "@/lib/types";
 
 type Handover = StudentDetail["handovers"][number];
 

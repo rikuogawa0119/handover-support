@@ -1,7 +1,7 @@
 import { Bookmark } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { HandoverMemoList } from "@/components/students/handover-memo-list";
-import type { StudentDetail } from "@/lib/mock-data";
+import type { StudentDetail } from "@/lib/types";
 
 type Handover = StudentDetail["handovers"][number];
 

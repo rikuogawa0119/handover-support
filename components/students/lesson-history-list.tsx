@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ClipboardList } from "lucide-react";
 import { Badge, Card } from "@/components/ui/card";
 import { bucketUnderstanding, homeworkStatusLabels } from "@/lib/constants";
-import type { StudentDetail } from "@/lib/mock-data";
+import type { StudentDetail } from "@/lib/types";
 
 type Lesson = StudentDetail["lessons"][number];
 

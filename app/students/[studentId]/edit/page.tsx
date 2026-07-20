@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, Input, Textarea } from "@/components/ui/field";
 import { getCurrentTeacher, getStudentDetail } from "@/lib/data";
+import { updateStudentAction } from "@/app/students/actions";
 
 export default async function EditStudentPage({
   params
@@ -30,9 +31,9 @@ export default async function EditStudentPage({
         </div>
 
         <Card className="grid gap-4 p-5">
-          <form className="grid gap-4">
+          <form className="grid gap-4" action={updateStudentAction.bind(null, student.id)}>
             <Field label="生徒名">
-              <Input name="name" defaultValue={student.name} />
+              <Input name="name" defaultValue={student.name} required />
             </Field>
             <Field label="学年">
               <Input name="grade" defaultValue={student.grade} />
@@ -43,7 +44,7 @@ export default async function EditStudentPage({
             <Field label="備考">
               <Textarea name="note" defaultValue={student.note ?? ""} />
             </Field>
-            <Button type="button" className="w-fit">
+            <Button type="submit" className="w-fit">
               <Save className="h-5 w-5" aria-hidden="true" />
               保存する
             </Button>
