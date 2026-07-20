@@ -3,13 +3,12 @@ import { MetricCard } from "@/components/admin/metric-card";
 import { LessonTable } from "@/components/admin/lesson-table";
 import { ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { getCurrentTeacher, getLessons, getStudents } from "@/lib/data";
+import { getCurrentTeacher, getLessons } from "@/lib/data";
 import { getInitials } from "@/lib/utils";
 
 export default async function HomePage() {
-  const [teacherRecord, students, lessons] = await Promise.all([
+  const [teacherRecord, lessons] = await Promise.all([
     getCurrentTeacher(),
-    getStudents(),
     getLessons()
   ]);
 
