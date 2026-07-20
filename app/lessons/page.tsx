@@ -5,7 +5,7 @@ import { MetricCard } from "@/components/admin/metric-card";
 import { LessonFilterBar } from "@/components/admin/lesson-filter-bar";
 import { LessonTable } from "@/components/admin/lesson-table";
 import { LessonPagination } from "@/components/admin/lesson-pagination";
-import { getCurrentTeacher, getLessons, getSubjects, getTeachers } from "@/lib/data";
+import { filterLessons, getCurrentTeacher, getLessons, getSubjects, getTeachers } from "@/lib/data";
 import { getInitials } from "@/lib/utils";
 
 const PAGE_SIZE = 10;
@@ -17,13 +17,13 @@ export default async function LessonsPage({
 }) {
   const { q, subject, teacher, page } = await searchParams;
 
-  const [teacherRecord, subjects, teachers, allLessons, filteredLessons] = await Promise.all([
+  const [teacherRecord, subjects, teachers, allLessons] = await Promise.all([
     getCurrentTeacher(),
     getSubjects(),
     getTeachers(),
-    getLessons(),
-    getLessons({ query: q, subjectName: subject, teacherName: teacher })
+    getLessons()
   ]);
+  const filteredLessons = filterLessons(allLessons, { query: q, subjectName: subject, teacherName: teacher });
 
   const isAdmin = teacherRecord?.role === "ADMIN";
   if (!isAdmin) {

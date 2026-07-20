@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { findUnderstandingTier, type HomeworkStatusKey, type UnderstandingTierKey } from "@/lib/constants";
 import type { StudentDetail, StudentSummary } from "@/lib/types";
@@ -222,27 +223,36 @@ export async function getLessons(filters?: LessonListFilters): Promise<LessonLis
 
   if (error) throw error;
 
-  return (data ?? [])
-    .map((lesson) => {
-      const student = firstOf(lesson.student);
-      const subject = firstOf(lesson.subject);
-      const teacher = firstOf(lesson.teacher);
-      return {
-        id: lesson.lesson_id,
-        lessonDate: lesson.lesson_date,
-        studentId: student?.student_id ?? "",
-        studentName: student?.student_name ?? "",
-        subjectName: subject?.subject_name ?? "",
-        lessonContent: lesson.lesson_content,
-        understanding: understandingToNumber(lesson.understanding),
-        teacherName: teacher?.teacher_name ?? "",
-        homework: mapHomework(lesson.homework)
-      };
-    })
-    .filter((item) => matchesLessonFilters(item, filters));
+  const items = (data ?? []).map((lesson) => {
+    const student = firstOf(lesson.student);
+    const subject = firstOf(lesson.subject);
+    const teacher = firstOf(lesson.teacher);
+    return {
+      id: lesson.lesson_id,
+      lessonDate: lesson.lesson_date,
+      studentId: student?.student_id ?? "",
+      studentName: student?.student_name ?? "",
+      subjectName: subject?.subject_name ?? "",
+      lessonContent: lesson.lesson_content,
+      understanding: understandingToNumber(lesson.understanding),
+      teacherName: teacher?.teacher_name ?? "",
+      homework: mapHomework(lesson.homework)
+    };
+  });
+
+  return filterLessons(items, filters);
 }
 
-export async function getTeachers() {
+/** Applies list filters to an already-fetched lesson set, so callers that need both the full and a filtered view (e.g. dashboard metrics + a filtered table) can fetch once and filter twice instead of querying twice. */
+export function filterLessons(
+  lessons: LessonListItem[],
+  filters?: LessonListFilters
+): LessonListItem[] {
+  return lessons.filter((item) => matchesLessonFilters(item, filters));
+}
+
+/** Deduped per-request: reference data that multiple components on the same page (or nested layouts) may each ask for. */
+export const getTeachers = cache(async () => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("teachers")
@@ -252,9 +262,9 @@ export async function getTeachers() {
   if (error) throw error;
 
   return (data ?? []).map((teacher) => ({ id: teacher.teacher_id, name: teacher.teacher_name }));
-}
+});
 
-export async function getSubjects() {
+export const getSubjects = cache(async () => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("subjects")
@@ -264,7 +274,7 @@ export async function getSubjects() {
   if (error) throw error;
 
   return (data ?? []).map((subject) => ({ id: subject.subject_id, name: subject.subject_name }));
-}
+});
 
 export type CurrentTeacher = {
   id: string;
