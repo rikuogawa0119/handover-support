@@ -24,10 +24,10 @@ export function classNames(...values: Array<string | undefined | false>) {
 
 export function AdminBrand() {
   return (
-    <div className="flex items-center gap-2 px-4 py-4">
+    <Link href="/" className="flex items-center gap-2 px-4 py-4">
       <ClipboardCheck className="h-5 w-5 text-gray-900" aria-hidden="true" />
       <span className="font-medium">{ADMIN_APP_NAME}</span>
-    </div>
+    </Link>
   );
 }
 

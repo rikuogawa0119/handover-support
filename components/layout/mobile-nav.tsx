@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { ADMIN_APP_NAME } from "@/lib/constants";
 import { AdminBrand, AdminNavList, classNames, type NavKey } from "@/components/layout/admin-nav-items";
@@ -67,7 +68,9 @@ export function MobileNav({ active }: { active: NavKey }) {
         >
           <Menu className="h-5 w-5" aria-hidden="true" />
         </button>
-        <span className="text-sm font-medium">{ADMIN_APP_NAME}</span>
+        <Link href="/" className="text-sm font-medium">
+          {ADMIN_APP_NAME}
+        </Link>
       </div>
     </>
   );
