@@ -276,6 +276,46 @@ export const getSubjects = cache(async () => {
   return (data ?? []).map((subject) => ({ id: subject.subject_id, name: subject.subject_name }));
 });
 
+export type RecentHandoverMemo = {
+  id: string;
+  studentId: string;
+  studentName: string;
+  memoContent: string;
+  createdAt: string;
+  teacherName: string;
+};
+
+export async function getRecentHandoverMemos(sinceDays = 3): Promise<RecentHandoverMemo[]> {
+  const supabase = await createClient();
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - sinceDays);
+
+  const { data, error } = await supabase
+    .from("handover_memos")
+    .select(
+      `handover_id, memo_content, created_at,
+       student:students ( student_id, student_name ),
+       teacher:teachers ( teacher_name )`
+    )
+    .gte("created_at", cutoff.toISOString())
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+
+  return (data ?? []).map((memo) => {
+    const student = firstOf(memo.student);
+    const teacher = firstOf(memo.teacher);
+    return {
+      id: memo.handover_id,
+      studentId: student?.student_id ?? "",
+      studentName: student?.student_name ?? "",
+      memoContent: memo.memo_content,
+      createdAt: memo.created_at,
+      teacherName: teacher?.teacher_name ?? "不明"
+    };
+  });
+}
+
 export type CurrentTeacher = {
   id: string;
   name: string;

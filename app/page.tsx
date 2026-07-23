@@ -1,33 +1,31 @@
 import Link from "next/link";
+import { FileEdit, MessageSquareWarning } from "lucide-react";
 import { AdminShell } from "@/components/layout/admin-shell";
 import { HeaderAvatar } from "@/components/layout/header-avatar";
-import { MetricCard } from "@/components/admin/metric-card";
 import { LessonTable } from "@/components/admin/lesson-table";
+import { TaskSection } from "@/components/home/task-section";
+import { TaskListItem } from "@/components/home/task-list-item";
 import { Button } from "@/components/ui/button";
-import { getCurrentTeacher, getLessons } from "@/lib/data";
+import { getCurrentTeacher, getLessons, getRecentHandoverMemos } from "@/lib/data";
+import { getMissingContentTasks } from "@/lib/home-tasks";
 import { getInitials } from "@/lib/utils";
 
+const MAX_ITEMS = 5;
+
 export default async function HomePage() {
-  const [teacherRecord, lessons] = await Promise.all([
+  const [teacherRecord, lessons, recentHandoverMemos] = await Promise.all([
     getCurrentTeacher(),
-    getLessons()
+    getLessons(),
+    getRecentHandoverMemos(3)
   ]);
 
   const avatar = (
     <HeaderAvatar initials={getInitials(teacherRecord?.name ?? "先生")} isLoggedIn={Boolean(teacherRecord)} />
   );
 
-  const now = new Date();
-  const weekAgo = new Date(now);
-  weekAgo.setDate(weekAgo.getDate() - 7);
-  const weekAgoStr = weekAgo.toISOString().slice(0, 10);
-
-  const thisWeekCount = lessons.filter((lesson) => lesson.lessonDate >= weekAgoStr).length;
-  const missingContentCount = lessons.filter((lesson) => !lesson.lessonContent.trim()).length;
-  const notSubmittedCount = lessons.filter(
-    (lesson) => lesson.homework?.submissionStatus === "NOT_SUBMITTED"
-  ).length;
   const recentLessons = lessons.slice(0, 5);
+
+  const missingContentTasks = getMissingContentTasks(lessons);
 
   return (
     <AdminShell active="home">
@@ -39,24 +37,40 @@ export default async function HomePage() {
           {avatar}
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
-          <MetricCard label="今週の記録数" value={thisWeekCount} />
-          <MetricCard label="未入力" value={missingContentCount} valueClassName="text-red-600" />
-          <MetricCard label="宿題 未提出" value={notSubmittedCount} valueClassName="text-amber-600" />
-        </div>
+        <div className="grid gap-4">
+          <TaskSection
+            icon={<FileEdit className="h-5 w-5 text-red-600" />}
+            title="未入力の授業記録"
+            count={missingContentTasks.length}
+            emptyMessage="未入力の授業記録はありません。"
+          >
+            {missingContentTasks.slice(0, MAX_ITEMS).map((task) => (
+              <TaskListItem
+                key={task.lessonId}
+                title={`${task.studentName}(${task.subjectName})`}
+                description={`${task.lessonDate} の授業記録が未入力です`}
+                href={`/students/${task.studentId}/lessons/${task.lessonId}/edit`}
+                actionLabel="記録を書く"
+              />
+            ))}
+          </TaskSection>
 
-        <Button asChild className="w-fit">
-          <Link href="/students">生徒を検索する</Link>
-        </Button>
-
-        <div className="grid gap-3">
-          <div className="flex items-center justify-between">
-            <p className="text-lg font-bold">直近の授業記録</p>
-            <Button asChild variant="outline" size="sm">
-              <Link href="/lessons">すべて見る</Link>
-            </Button>
-          </div>
-          <LessonTable lessons={recentLessons} isAdmin={false} />
+          <TaskSection
+            icon={<MessageSquareWarning className="h-5 w-5 text-amber-600" />}
+            title="新着の引継ぎメモ"
+            count={recentHandoverMemos.length}
+            emptyMessage="直近3日以内の新着メモはありません。"
+          >
+            {recentHandoverMemos.slice(0, MAX_ITEMS).map((memo) => (
+              <TaskListItem
+                key={memo.id}
+                title={memo.studentName}
+                description={memo.memoContent}
+                href={`/students/${memo.studentId}`}
+                actionLabel="確認する"
+              />
+            ))}
+          </TaskSection>
         </div>
       </div>
     </AdminShell>
