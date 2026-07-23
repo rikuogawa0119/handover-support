@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { AdminShell } from "@/components/layout/admin-shell";
-import { ButtonLink } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { LessonHistoryList } from "@/components/students/lesson-history-list";
 import { getStudentDetail } from "@/lib/data";
 
@@ -24,9 +25,9 @@ export default async function StudentLessonsPage({
             <h1 className="text-lg font-medium">{student.name}の授業記録</h1>
             <p className="text-xs text-muted-foreground">全{student.lessons.length}件</p>
           </div>
-          <ButtonLink href={`/students/${student.id}/lessons/new`} size="sm">
-            記録を登録
-          </ButtonLink>
+          <Button asChild size="sm">
+            <Link href={`/students/${student.id}/lessons/new`}>記録を登録</Link>
+          </Button>
         </div>
 
         <LessonHistoryList lessons={student.lessons} />

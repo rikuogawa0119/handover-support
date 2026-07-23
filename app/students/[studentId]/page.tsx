@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { FilePenLine, StickyNote } from "lucide-react";
 import { AdminShell } from "@/components/layout/admin-shell";
-import { ButtonLink } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { HandoverMemoCard } from "@/components/students/handover-memo-card";
 import { LessonHistoryList } from "@/components/students/lesson-history-list";
 import { getCurrentTeacher, getStudentDetail } from "@/lib/data";
@@ -39,24 +40,28 @@ export default async function StudentDetailPage({
             </div>
           </div>
           {isAdmin ? (
-            <ButtonLink href={`/students/${student.id}/edit`} variant="secondary" size="sm">
-              <FilePenLine className="h-4 w-4" aria-hidden="true" />
-              編集
-            </ButtonLink>
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/students/${student.id}/edit`}>
+                <FilePenLine className="h-4 w-4" aria-hidden="true" />
+                編集
+              </Link>
+            </Button>
           ) : null}
         </div>
 
         <div className="flex flex-wrap gap-3">
-          <ButtonLink href={`/students/${student.id}/lessons/new`} size="sm">
-            授業記録を登録
-          </ButtonLink>
-          <ButtonLink href={`/students/${student.id}/lessons`} variant="secondary" size="sm">
-            授業記録一覧
-          </ButtonLink>
-          <ButtonLink href={`/students/${student.id}/handovers/new`} variant="secondary" size="sm">
-            <StickyNote className="h-4 w-4" aria-hidden="true" />
-            引継ぎメモを追加
-          </ButtonLink>
+          <Button asChild size="sm">
+            <Link href={`/students/${student.id}/lessons/new`}>授業記録を登録</Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link href={`/students/${student.id}/lessons`}>授業記録一覧</Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link href={`/students/${student.id}/handovers/new`}>
+              <StickyNote className="h-4 w-4" aria-hidden="true" />
+              引継ぎメモを追加
+            </Link>
+          </Button>
         </div>
 
         {student.handovers.length > 0 ? <HandoverMemoCard handovers={student.handovers} /> : null}

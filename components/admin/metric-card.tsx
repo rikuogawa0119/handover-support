@@ -1,6 +1,5 @@
-function classNames(...values: Array<string | undefined | false>) {
-  return values.filter(Boolean).join(" ");
-}
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 export function MetricCard({
   label,
@@ -12,11 +11,13 @@ export function MetricCard({
   valueClassName?: string;
 }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-      <p className="text-base">{label}</p>
-      <p className={classNames("mt-1 text-[22px] font-medium", valueClassName ?? "text-gray-900")}>
-        {value}
-      </p>
-    </div>
+    <Card className="rounded-xl shadow-sm">
+      <CardContent className="p-4">
+        <p className="text-base">{label}</p>
+        <p className={cn("mt-1 text-[22px] font-medium", valueClassName ?? "text-foreground")}>
+          {value}
+        </p>
+      </CardContent>
+    </Card>
   );
 }

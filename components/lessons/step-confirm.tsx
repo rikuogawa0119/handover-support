@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { findUnderstandingTier, homeworkStatusLabels } from "@/lib/constants";
 import type { WizardState } from "@/components/lessons/lesson-wizard";
 
@@ -51,18 +51,20 @@ function ConfirmGroup({
   children: ReactNode;
 }) {
   return (
-    <Card className="grid gap-3 p-4">
-      <div className="flex items-center justify-between">
-        <p className="text-xs font-medium text-gray-500">{title}</p>
-        <button
-          type="button"
-          onClick={onEdit}
-          className="text-xs font-medium text-gray-500 underline underline-offset-2 hover:text-gray-700"
-        >
-          編集
-        </button>
-      </div>
-      <div className="grid gap-3">{children}</div>
+    <Card>
+      <CardContent className="grid gap-3 p-4">
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-medium text-gray-500">{title}</p>
+          <button
+            type="button"
+            onClick={onEdit}
+            className="text-xs font-medium text-gray-500 underline underline-offset-2 hover:text-gray-700"
+          >
+            編集
+          </button>
+        </div>
+        <div className="grid gap-3">{children}</div>
+      </CardContent>
     </Card>
   );
 }

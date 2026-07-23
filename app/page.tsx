@@ -1,8 +1,9 @@
+import Link from "next/link";
 import { AdminShell } from "@/components/layout/admin-shell";
 import { HeaderAvatar } from "@/components/layout/header-avatar";
 import { MetricCard } from "@/components/admin/metric-card";
 import { LessonTable } from "@/components/admin/lesson-table";
-import { ButtonLink } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { getCurrentTeacher, getLessons } from "@/lib/data";
 import { getInitials } from "@/lib/utils";
 
@@ -44,16 +45,16 @@ export default async function HomePage() {
           <MetricCard label="宿題 未提出" value={notSubmittedCount} valueClassName="text-amber-600" />
         </div>
 
-        <ButtonLink href="/students" className="w-fit">
-          生徒を検索する
-        </ButtonLink>
+        <Button asChild className="w-fit">
+          <Link href="/students">生徒を検索する</Link>
+        </Button>
 
         <div className="grid gap-3">
           <div className="flex items-center justify-between">
             <p className="text-lg font-bold">直近の授業記録</p>
-            <ButtonLink href="/lessons" variant="secondary" size="sm">
-              すべて見る
-            </ButtonLink>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/lessons">すべて見る</Link>
+            </Button>
           </div>
           <LessonTable lessons={recentLessons} isAdmin={false} />
         </div>

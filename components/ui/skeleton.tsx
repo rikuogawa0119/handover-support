@@ -1,9 +1,15 @@
-import type { HTMLAttributes } from "react";
+import { cn } from "@/lib/utils"
 
-function classNames(...values: Array<string | undefined | false>) {
-  return values.filter(Boolean).join(" ");
+function Skeleton({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn("animate-pulse rounded-md bg-primary/10", className)}
+      {...props}
+    />
+  )
 }
 
-export function Skeleton({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={classNames("animate-pulse rounded-md bg-gray-200", className)} {...props} />;
-}
+export { Skeleton }

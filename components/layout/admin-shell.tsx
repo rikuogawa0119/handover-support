@@ -3,8 +3,8 @@ import { MobileNav } from "@/components/layout/mobile-nav";
 
 export function AdminShell({ active, children }: { active: NavKey; children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <aside className="hidden w-[168px] shrink-0 flex-col border-r border-gray-200 bg-white md:flex">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950">
+      <aside className="hidden w-[168px] shrink-0 flex-col border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 md:flex">
         <AdminBrand />
         <AdminNavList active={active} />
       </aside>

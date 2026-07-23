@@ -7,9 +7,12 @@ export const lessonWizardSchema = z.object({
     .string()
     .min(1, "授業内容を入力してください。")
     .max(1000, "授業内容は1000文字以内で入力してください。"),
-  understanding: z.enum(["GOOD", "PARTIAL", "NEEDS_REVIEW"], {
-    errorMap: () => ({ message: "理解度を選択してください。" })
-  }),
+  understanding: z
+    .enum(["GOOD", "PARTIAL", "NEEDS_REVIEW"])
+    .nullable()
+    .refine((value): value is "GOOD" | "PARTIAL" | "NEEDS_REVIEW" => value !== null, {
+      message: "理解度を選択してください。"
+    }),
   homeworkContent: z
     .string()
     .max(1000, "宿題内容は1000文字以内で入力してください。")

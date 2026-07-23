@@ -3,7 +3,10 @@
 import { useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
-import { Input, Select } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const ALL_VALUE = "all";
 
 export function LessonFilterBar({
   subjectNames,
@@ -49,28 +52,36 @@ export function LessonFilterBar({
         />
       </div>
       <Select
-        defaultValue={searchParams.get("subject") ?? ""}
-        onChange={(event) => applyParams({ subject: event.target.value })}
-        className="w-36 shrink-0 sm:w-40"
+        defaultValue={searchParams.get("subject") || ALL_VALUE}
+        onValueChange={(value) => applyParams({ subject: value === ALL_VALUE ? "" : value })}
       >
-        <option value="">科目すべて</option>
-        {subjectNames.map((name) => (
-          <option key={name} value={name}>
-            {name}
-          </option>
-        ))}
+        <SelectTrigger className="w-36 shrink-0 sm:w-40">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={ALL_VALUE}>科目すべて</SelectItem>
+          {subjectNames.map((name) => (
+            <SelectItem key={name} value={name}>
+              {name}
+            </SelectItem>
+          ))}
+        </SelectContent>
       </Select>
       <Select
-        defaultValue={searchParams.get("teacher") ?? ""}
-        onChange={(event) => applyParams({ teacher: event.target.value })}
-        className="w-36 shrink-0 sm:w-40"
+        defaultValue={searchParams.get("teacher") || ALL_VALUE}
+        onValueChange={(value) => applyParams({ teacher: value === ALL_VALUE ? "" : value })}
       >
-        <option value="">講師すべて</option>
-        {teacherNames.map((name) => (
-          <option key={name} value={name}>
-            {name}
-          </option>
-        ))}
+        <SelectTrigger className="w-36 shrink-0 sm:w-40">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={ALL_VALUE}>講師すべて</SelectItem>
+          {teacherNames.map((name) => (
+            <SelectItem key={name} value={name}>
+              {name}
+            </SelectItem>
+          ))}
+        </SelectContent>
       </Select>
     </div>
   );

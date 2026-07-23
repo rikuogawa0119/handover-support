@@ -1,25 +1,25 @@
 "use client";
 
 import type { RefObject } from "react";
-import { Card } from "@/components/ui/card";
-import { Field, Input, Select, Textarea } from "@/components/ui/field";
-import { SegmentedControl } from "@/components/ui/segmented-control";
+import type { Control } from "react-hook-form";
+import { cn } from "@/lib/utils";
+import { Card, CardContent } from "@/components/ui/card";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { HOMEWORK_STATUS_OPTIONS, UNDERSTANDING_TIERS } from "@/lib/constants";
-import type { LessonWizardErrors } from "@/lib/validations/lesson";
 import type { SubjectOption, WizardState } from "@/components/lessons/lesson-wizard";
 
 export function StepInput({
-  state,
-  update,
-  errors,
+  control,
   subjects,
   groupARef,
   groupBRef,
   groupCRef
 }: {
-  state: WizardState;
-  update: <K extends keyof WizardState>(key: K, value: WizardState[K]) => void;
-  errors: LessonWizardErrors;
+  control: Control<WizardState>;
   subjects: SubjectOption[];
   groupARef: RefObject<HTMLDivElement | null>;
   groupBRef: RefObject<HTMLDivElement | null>;
@@ -28,88 +28,194 @@ export function StepInput({
   return (
     <div className="grid gap-4">
       <div ref={groupARef}>
-        <Card className="grid gap-4 p-5">
-          <p className="text-xs font-medium text-gray-500">授業内容</p>
-          <Field label="授業日" required error={errors.lessonDate}>
-            <Input
-              type="date"
-              value={state.lessonDate}
-              onChange={(event) => update("lessonDate", event.target.value)}
+        <Card>
+          <CardContent className="grid gap-4 p-5">
+            <p className="text-xs font-medium text-gray-500">授業内容</p>
+            <FormField
+              control={control}
+              name="lessonDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    授業日<span className="ml-1 text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </Field>
-          <Field label="科目" required error={errors.subjectId}>
-            <Select value={state.subjectId} onChange={(event) => update("subjectId", event.target.value)}>
-              {subjects.map((subject) => (
-                <option key={subject.id} value={subject.id}>
-                  {subject.name}
-                </option>
-              ))}
-            </Select>
-          </Field>
-          <Field label="授業内容" required error={errors.lessonContent}>
-            <Textarea
-              rows={3}
-              placeholder="例：二次関数の最大・最小を解説"
-              value={state.lessonContent}
-              onChange={(event) => update("lessonContent", event.target.value)}
+            <FormField
+              control={control}
+              name="subjectId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    科目<span className="ml-1 text-destructive">*</span>
+                  </FormLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {subjects.map((subject) => (
+                        <SelectItem key={subject.id} value={subject.id}>
+                          {subject.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </Field>
-          <Field label="理解度" required error={errors.understanding}>
-            <SegmentedControl
-              ariaLabel="理解度"
-              value={state.understanding}
-              onChange={(value) => update("understanding", value)}
-              options={UNDERSTANDING_TIERS.map((tier) => ({
-                value: tier.key,
-                label: tier.label,
-                activeClassName: tier.activeClassName
-              }))}
+            <FormField
+              control={control}
+              name="lessonContent"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    授業内容<span className="ml-1 text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea rows={3} placeholder="例：二次関数の最大・最小を解説" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </Field>
+            <FormField
+              control={control}
+              name="understanding"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    理解度<span className="ml-1 text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <ToggleGroup
+                      type="single"
+                      aria-label="理解度"
+                      className="grid grid-flow-col auto-cols-fr gap-2"
+                      value={field.value ?? undefined}
+                      onValueChange={(value) => {
+                        if (value) field.onChange(value);
+                      }}
+                    >
+                      {UNDERSTANDING_TIERS.map((tier) => (
+                        <ToggleGroupItem
+                          key={tier.key}
+                          value={tier.key}
+                          className={cn(
+                            "h-11 rounded-lg border text-sm font-medium",
+                            field.value === tier.key && tier.activeClassName
+                          )}
+                        >
+                          {tier.label}
+                        </ToggleGroupItem>
+                      ))}
+                    </ToggleGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
         </Card>
       </div>
 
       <div ref={groupBRef}>
-        <Card className="grid gap-4 p-5">
-          <p className="text-xs font-medium text-gray-500">宿題</p>
-          <Field label="宿題内容" error={errors.homeworkContent}>
-            <Input
-              placeholder="例：問題集 p.32〜34"
-              value={state.homeworkContent}
-              onChange={(event) => update("homeworkContent", event.target.value)}
+        <Card>
+          <CardContent className="grid gap-4 p-5">
+            <p className="text-xs font-medium text-gray-500">宿題</p>
+            <FormField
+              control={control}
+              name="homeworkContent"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>宿題内容</FormLabel>
+                  <FormControl>
+                    <Input placeholder="例：問題集 p.32〜34" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </Field>
-          <Field label="提出状況" error={errors.submissionStatus}>
-            <SegmentedControl
-              ariaLabel="提出状況"
-              value={state.submissionStatus === "UNSET" ? null : state.submissionStatus}
-              onChange={(value) => update("submissionStatus", value)}
-              options={HOMEWORK_STATUS_OPTIONS.map((option) => ({
-                value: option.key,
-                label: option.label,
-                activeClassName: option.activeClassName
-              }))}
+            <FormField
+              control={control}
+              name="submissionStatus"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>提出状況</FormLabel>
+                  <FormControl>
+                    <ToggleGroup
+                      type="single"
+                      aria-label="提出状況"
+                      className="grid grid-flow-col auto-cols-fr gap-2"
+                      value={field.value === "UNSET" ? undefined : field.value}
+                      onValueChange={(value) => {
+                        if (value) field.onChange(value);
+                      }}
+                    >
+                      {HOMEWORK_STATUS_OPTIONS.map((option) => (
+                        <ToggleGroupItem
+                          key={option.key}
+                          value={option.key}
+                          className={cn(
+                            "h-11 rounded-lg border text-sm font-medium",
+                            field.value === option.key && option.activeClassName
+                          )}
+                        >
+                          {option.label}
+                        </ToggleGroupItem>
+                      ))}
+                    </ToggleGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </Field>
+          </CardContent>
         </Card>
       </div>
 
       <div ref={groupCRef}>
-        <Card className="grid gap-4 p-5">
-          <p className="text-xs font-medium text-gray-500">次回内容</p>
-          <Field label="次回実施予定" required error={errors.nextPlan}>
-            <Textarea
-              placeholder="例：定義域がある最大・最小の問題から再開"
-              value={state.nextPlan}
-              onChange={(event) => update("nextPlan", event.target.value)}
+        <Card>
+          <CardContent className="grid gap-4 p-5">
+            <p className="text-xs font-medium text-gray-500">次回内容</p>
+            <FormField
+              control={control}
+              name="nextPlan"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    次回実施予定<span className="ml-1 text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="例：定義域がある最大・最小の問題から再開" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </Field>
-          <Field label="引継ぎメモ" hint="代講の講師に伝えたいことがあれば" error={errors.memoContent}>
-            <Textarea
-              value={state.memoContent}
-              onChange={(event) => update("memoContent", event.target.value)}
+            <FormField
+              control={control}
+              name="memoContent"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>引継ぎメモ</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} />
+                  </FormControl>
+                  <p className="text-xs leading-5 text-muted-foreground">代講の講師に伝えたいことがあれば</p>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </Field>
+          </CardContent>
         </Card>
       </div>
     </div>

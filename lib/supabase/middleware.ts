@@ -38,11 +38,24 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
+  let user = null;
   try {
     // Supabase is currently down; don't let a failed auth check break every page.
-    await supabase.auth.getUser();
+    const result = await supabase.auth.getUser();
+    user = result.data.user;
   } catch {
     // no-op — fall through as unauthenticated
   }
+
+  const { pathname } = request.nextUrl;
+  const isPublicRoute =
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/signup") ||
+    pathname.startsWith("/api/auth");
+
+  if (!user && !isPublicRoute) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
   return response;
 }

@@ -6,10 +6,7 @@ import { lessonWizardSchema } from "@/lib/validations/lesson";
 import type { WizardState } from "@/components/lessons/lesson-wizard";
 
 async function persistLesson(studentId: string, lessonId: string | null, input: WizardState) {
-  const parsed = lessonWizardSchema.parse({
-    ...input,
-    understanding: input.understanding ?? ""
-  });
+  const parsed = lessonWizardSchema.parse(input);
 
   const supabase = await createClient();
   const {

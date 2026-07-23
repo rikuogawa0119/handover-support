@@ -3,10 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { handoverSchema, type HandoverInput } from "@/lib/validations/handover";
 
-export async function createHandoverAction(studentId: string, formData: FormData) {
-  const memoContent = String(formData.get("memoContent") ?? "").trim();
-  if (!memoContent) throw new Error("引継ぎメモを入力してください。");
+export async function createHandoverAction(studentId: string, input: HandoverInput) {
+  const { memoContent } = handoverSchema.parse(input);
 
   const supabase = await createClient();
   const {

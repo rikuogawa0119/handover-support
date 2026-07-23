@@ -3,24 +3,20 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { studentSchema, type StudentInput } from "@/lib/validations/student";
 
-function readStudentValues(formData: FormData) {
-  const name = String(formData.get("name") ?? "").trim();
-  const grade = String(formData.get("grade") ?? "").trim();
-  const schoolName = String(formData.get("schoolName") ?? "").trim();
-  const note = String(formData.get("note") ?? "").trim();
-
+function toStudentValues(input: StudentInput) {
+  const parsed = studentSchema.parse(input);
   return {
-    student_name: name,
-    grade: grade || null,
-    school_name: schoolName || null,
-    note: note || null
+    student_name: parsed.name.trim(),
+    grade: parsed.grade.trim() || null,
+    school_name: parsed.schoolName.trim() || null,
+    note: parsed.note.trim() || null
   };
 }
 
-export async function createStudentAction(formData: FormData) {
-  const values = readStudentValues(formData);
-  if (!values.student_name) throw new Error("生徒名を入力してください。");
+export async function createStudentAction(input: StudentInput) {
+  const values = toStudentValues(input);
 
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -34,9 +30,8 @@ export async function createStudentAction(formData: FormData) {
   redirect(`/students/${data.student_id}`);
 }
 
-export async function updateStudentAction(studentId: string, formData: FormData) {
-  const values = readStudentValues(formData);
-  if (!values.student_name) throw new Error("生徒名を入力してください。");
+export async function updateStudentAction(studentId: string, input: StudentInput) {
+  const values = toStudentValues(input);
 
   const supabase = await createClient();
   const { error } = await supabase.from("students").update(values).eq("student_id", studentId);

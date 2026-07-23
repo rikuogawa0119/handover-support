@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { ClipboardList } from "lucide-react";
-import { Badge, Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { bucketUnderstanding, homeworkStatusLabels } from "@/lib/constants";
 import type { StudentDetail } from "@/lib/types";
 
@@ -24,23 +25,25 @@ export function LessonHistoryList({ lessons }: { lessons: Lesson[] }) {
       {visible.map((lesson) => {
         const tier = bucketUnderstanding(lesson.understanding);
         return (
-          <Card key={lesson.id} className="p-4">
-            <div className="flex items-center justify-between gap-2">
-              <p className="text-xs text-muted-foreground">
-                {lesson.lessonDate} ・ {lesson.subject.name}
+          <Card key={lesson.id}>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs text-muted-foreground">
+                  {lesson.lessonDate} ・ {lesson.subject.name}
+                </p>
+                <Badge variant={tier.badgeVariant}>{tier.label}</Badge>
+              </div>
+              <p className="mt-2 truncate text-sm leading-6">
+                {lesson.lessonContent || "（内容未入力）"}
               </p>
-              <Badge variant={tier.badgeVariant}>{tier.label}</Badge>
-            </div>
-            <p className="mt-2 truncate text-sm leading-6">
-              {lesson.lessonContent || "（内容未入力）"}
-            </p>
-            <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
-              <ClipboardList className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-              <span className="truncate">
-                {lesson.homework?.homeworkContent || "宿題なし"}
-                {lesson.homework ? ` ・ ${homeworkStatusLabels[lesson.homework.submissionStatus]}` : ""}
-              </span>
-            </div>
+              <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+                <ClipboardList className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                <span className="truncate">
+                  {lesson.homework?.homeworkContent || "宿題なし"}
+                  {lesson.homework ? ` ・ ${homeworkStatusLabels[lesson.homework.submissionStatus]}` : ""}
+                </span>
+              </div>
+            </CardContent>
           </Card>
         );
       })}

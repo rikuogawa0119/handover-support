@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Pagination, PaginationContent, PaginationItem } from "@/components/ui/pagination";
+import { Button } from "@/components/ui/button";
 
 export function LessonPagination({
   currentPage,
@@ -26,33 +28,41 @@ export function LessonPagination({
     return `/lessons?${params.toString()}`;
   }
 
-  const arrowClass = "inline-flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200";
-
   return (
     <div className="flex items-center justify-between text-sm text-muted-foreground">
       <p>
         {start}-{end}件 / 全{totalCount}件
       </p>
-      <div className="flex items-center gap-2">
-        {currentPage <= 1 ? (
-          <span className={`${arrowClass} text-gray-300`}>
-            <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-          </span>
-        ) : (
-          <Link href={hrefFor(currentPage - 1)} aria-label="前へ" className={`${arrowClass} text-gray-600 hover:bg-gray-50`}>
-            <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-          </Link>
-        )}
-        {currentPage >= totalPages ? (
-          <span className={`${arrowClass} text-gray-300`}>
-            <ChevronRight className="h-4 w-4" aria-hidden="true" />
-          </span>
-        ) : (
-          <Link href={hrefFor(currentPage + 1)} aria-label="次へ" className={`${arrowClass} text-gray-600 hover:bg-gray-50`}>
-            <ChevronRight className="h-4 w-4" aria-hidden="true" />
-          </Link>
-        )}
-      </div>
+      <Pagination className="mx-0 w-auto justify-end">
+        <PaginationContent className="gap-2">
+          <PaginationItem>
+            {currentPage <= 1 ? (
+              <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg" disabled aria-disabled="true">
+                <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+              </Button>
+            ) : (
+              <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg" asChild>
+                <Link href={hrefFor(currentPage - 1)} aria-label="前へ">
+                  <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                </Link>
+              </Button>
+            )}
+          </PaginationItem>
+          <PaginationItem>
+            {currentPage >= totalPages ? (
+              <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg" disabled aria-disabled="true">
+                <ChevronRight className="h-4 w-4" aria-hidden="true" />
+              </Button>
+            ) : (
+              <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg" asChild>
+                <Link href={hrefFor(currentPage + 1)} aria-label="次へ">
+                  <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+              </Button>
+            )}
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 }

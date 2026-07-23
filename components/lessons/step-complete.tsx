@@ -1,7 +1,8 @@
 "use client";
 
 import { CheckCircle2 } from "lucide-react";
-import { ButtonLink } from "@/components/ui/button";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export function StepComplete({
   studentId,
@@ -19,12 +20,12 @@ export function StepComplete({
         {mode === "edit" ? "授業記録を更新しました" : "授業記録を登録しました"}
       </p>
       <div className="grid w-full gap-3">
-        <ButtonLink href={`/students/${studentId}`} className="w-full">
-          同じ生徒の詳細へ戻る
-        </ButtonLink>
-        <ButtonLink href="/" variant="secondary" className="w-full">
-          トップへ戻る
-        </ButtonLink>
+        <Button asChild className="w-full">
+          <Link href={`/students/${studentId}`}>同じ生徒の詳細へ戻る</Link>
+        </Button>
+        <Button asChild variant="outline" className="w-full">
+          <Link href="/">トップへ戻る</Link>
+        </Button>
       </div>
     </div>
   );
